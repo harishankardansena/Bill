@@ -1,6 +1,6 @@
 {
-  "name": "Ayush Traders Bill Maker",
-  "short_name": "BillMaker",
+  "name": "Ayush Traders",
+  "short_name": "Ayush Traders",
   "description": "Invoice generator for Ayush Traders",
   "start_url": "/",
   "display": "standalone",
