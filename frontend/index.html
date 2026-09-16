@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ayush Traders Bill Maker</title>
+  <link rel="icon" href="/assets/icon-192x192.png" type="image/png">
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="/assets/manifest.json">
+</head>
+<body>
+
+  <!-- LOGIN SCREEN -->
+  <datalist id="items-list">
+    <option value="Fly Ash Bricks">
+  </datalist>
+
+  <div id="login-screen" class="login-container">
+    <div class="login-box">
+      <img src="/assets/icon-192x192.png" alt="AT Logo">
+      <h2 style="color: #002B5B; margin-bottom: 20px;">Ayush Traders Login</h2>
+      <form id="login-form">
+        <input type="text" id="login-id" placeholder="ID" required>
+        <input type="password" id="login-password" placeholder="Password" required>
+        <div id="login-error" style="color: red; font-size: 14px; margin-bottom: 10px;"></div>
+        <button type="submit">Login</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- DASHBOARD SCREEN -->
+  <div id="dashboard-screen" class="dashboard-container" style="display:none; padding: 20px;">
+    <div style="text-align:center; margin-bottom: 40px;">
+      <h1 style="color: #002B5B;">Welcome, Admin</h1>
+      <p>What would you like to do today?</p>
+    </div>
+    
+    <div class="cards-grid">
+      <div class="dash-card" onclick="showInvoiceMaker()">
+        <div class="icon">📄</div>
+        <h3>Create Bill</h3>
+        <p>Generate a new tax invoice</p>
+      </div>
+      <div class="dash-card" onclick="showViewBills()">
+        <div class="icon">📁</div>
+        <h3>View Bills</h3>
+        <p>Check history of saved invoices</p>
+      </div>
+      <div class="dash-card" onclick="showSettings()">
+        <div class="icon">⚙️</div>
+        <h3>Edit Firm Details</h3>
+        <p>Update business info & GST</p>
+      </div>
+      <div class="dash-card" onclick="promptEditBill()">
+        <div class="icon">✏️</div>
+        <h3>Edit Bill</h3>
+        <p>Modify previously generated bills</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS SCREEN -->
+  <div id="settings-screen" class="login-container" style="display:none;">
+    <div class="login-box" style="max-width:500px;">
+      <h2 style="color: #002B5B; margin-bottom: 20px;">Edit Firm Details</h2>
+      <form id="settings-form">
+        <label style="text-align:left; display:block; font-size:12px; margin-bottom:2px;">Firm Name</label>
+        <input type="text" id="set-name" required>
+        
+        <label style="text-align:left; display:block; font-size:12px; margin-bottom:2px;">MSME</label>
+        <input type="text" id="set-msme">
+        
+        <label style="text-align:left; display:block; font-size:12px; margin-bottom:2px;">Address</label>
+        <input type="text" id="set-address">
+        
+        <div style="display:flex; gap:10px;">
+          <div style="flex:1;">
+            <label style="text-align:left; display:block; font-size:12px; margin-bottom:2px;">Phone</label>
+            <input type="text" id="set-phone">
+          </div>
+          <div style="flex:1;">
+            <label style="text-align:left; display:block; font-size:12px; margin-bottom:2px;">Email</label>
+            <input type="text" id="set-email">
+          </div>
+        </div>
+
+        <div style="display:flex; gap:10px;">
+          <div style="flex:1;">
+            <label style="text-align:left; display:block; font-size:12px; margin-bottom:2px;">GSTIN</label>
+            <input type="text" id="set-gstin">
+          </div>
+          <div style="flex:1;">
+            <label style="text-align:left; display:block; font-size:12px; margin-bottom:2px;">State</label>
+            <input type="text" id="set-state">
+          </div>
+        </div>
+
+        <div style="display:flex; gap:10px; margin-top:5px;">
+          <div style="flex:1;">
+            <label style="text-align:left; display:block; font-size:12px; margin-bottom:2px;">Default CGST (%)</label>
+            <input type="number" step="0.01" id="set-cgst">
+          </div>
+          <div style="flex:1;">
+            <label style="text-align:left; display:block; font-size:12px; margin-bottom:2px;">Default SGST (%)</label>
+            <input type="number" step="0.01" id="set-sgst">
+          </div>
+        </div>
+
+        <div style="margin-top:20px; border-top: 1px solid #ccc; padding-top: 15px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px;">
+            <h3 style="color:#002B5B; margin:0; font-size:14px;">Manage Predefined Items</h3>
+            <button type="button" onclick="addSettingItemRow()" style="padding:4px 8px; font-size:12px; width:auto; background:#5E2C11;">+ Add Item</button>
+          </div>
+          <div id="settings-items-container" style="display:flex; flex-direction:column; gap:5px;">
+            <!-- Dynamic rows will be injected here -->
+          </div>
+        </div>
+        
+        <div style="display:flex; gap:10px; margin-top:15px;">
+          <button type="button" onclick="showDashboard()" style="background:#888;">Cancel</button>
+          <button type="submit">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- VIEW BILLS SCREEN -->
+  <div id="view-bills-screen" style="display:none; padding:20px; max-width:900px; margin:0 auto;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+      <h2 style="color:#002B5B; margin:0;">Saved Bills</h2>
+      <button onclick="showDashboard()" style="background:#555; border:none; color:#fff; padding:8px 15px; border-radius:4px; cursor:pointer;">&larr; Back to Dashboard</button>
+    </div>
+    <div style="background:#fff; border-radius:8px; box-shadow:0 2px 4px rgba(0,0,0,0.1); overflow:hidden;">
+      <table style="width:100%; border-collapse:collapse; text-align:left;">
+        <thead style="background:#002B5B; color:white;">
+          <tr>
+            <th style="padding:12px; border-bottom:1px solid #ddd;">Invoice No.</th>
+            <th style="padding:12px; border-bottom:1px solid #ddd;">Date</th>
+            <th style="padding:12px; border-bottom:1px solid #ddd;">Client Name</th>
+            <th style="padding:12px; border-bottom:1px solid #ddd;">Amount</th>
+            <th style="padding:12px; border-bottom:1px solid #ddd; text-align:right;">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="bills-table-body">
+          <!-- Dynamically populated -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- INVOICE APP -->
+  <div id="app-screen" style="display:none;">
+      <div class="no-print" style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+        <button onclick="showDashboard()" style="background:transparent; border:none; color:#555; cursor:pointer; font-size:14px; padding:0;">&larr; Back to Dashboard</button>
+        <div style="display:flex; gap:10px;">
+          <button id="btn-save-reset" onclick="saveAndReset()" style="background:#002B5B; border:none; color:#fff; padding:8px 15px; border-radius:4px; cursor:pointer; font-weight:bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">Create Invoice</button>
+          <button id="btn-save-print" onclick="saveAndPrint()" style="background:#5E2C11; border:none; color:#fff; padding:8px 15px; border-radius:4px; cursor:pointer; font-weight:bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">Create & Print Invoice</button>
+        </div>
+      </div>
+
+    <div class="invoice-wrapper" id="invoice-data">
+      <div class="invoice-header-title">Tax invoice</div>
+      
+      <div class="firm-header">
+        <div class="firm-logo">
+          <label>
+            <input type="file" accept="image/*" style="display:none" onchange="previewImage(this, 'logo-img')">
+            <img id="logo-img" src="/assets/icon-192x192.png" style="max-width:80px; max-height:80px; display:block; border-radius:12px;">
+            <div id="logo-placeholder" style="width:80px; height:80px; border:1px dashed #000; display:none; align-items:center; justify-content:center;">+ Logo</div>
+          </label>
+        </div>
+        <div class="firm-details" style="line-height: 1.5;">
+          <div class="firm-name" id="f-name">Loading...</div>
+          <div>MSME :- <span id="f-msme">Loading...</span></div>
+          <div id="f-address">Loading...</div>
+          <div>Phone no.: <span id="f-phone">Loading...</span> &nbsp;|&nbsp; Email: <span id="f-email">Loading...</span></div>
+          <div>GSTIN: <span id="f-gstin">Loading...</span> &nbsp;|&nbsp; State: <span id="f-state">Loading...</span></div>
+        </div>
+      </div>
+
+      <div class="info-grid">
+        <div class="info-col">
+          <div class="brown-header">Bill To</div>
+          <div class="info-body">
+            <input type="text" id="c-name" placeholder="Enter Customer Name" style="font-weight:bold; font-size:12px; width:100%;">
+            <textarea id="c-address" rows="2" placeholder="Enter Address"></textarea>
+            <div>Contact No. : <input id="c-phone" placeholder="Enter Contact no" style="width: 120px;"></div>
+            <div>State: <input id="c-state" placeholder="Enter State" style="width: 150px;"></div>
+          </div>
+        </div>
+
+        <div class="info-col">
+          <div class="brown-header" style="text-align:right">Invoice Details</div>
+          <div class="info-body" style="align-items: flex-end;">
+            <table style="font-size:11px; border-spacing:5px;">
+              <tr>
+                <td style="text-align:right">Invoice No. :</td>
+                <td><input id="i-no" value="Loading..." readonly style="width: 120px; text-align:right; font-weight:bold; background: transparent; border: none;"></td>
+              </tr>
+              <tr>
+                <td style="text-align:right">Date :</td>
+                <td><input id="i-date" style="width: 120px; text-align:right"></td>
+              </tr>
+              <tr>
+                <td style="text-align:right">Place of supply:</td>
+                <td><input id="i-supply" value="22-Chhattisgarh" style="width: 120px; text-align:right"></td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="items-table">
+          <thead>
+            <tr>
+              <th style="width:3%">#</th>
+              <th style="width:22%; text-align:left">Item name</th>
+              <th style="width:10%">HSN/ SAC</th>
+              <th style="width:7%">Quantity</th>
+              <th style="width:12%">Price/ Unit</th>
+              <th style="width:12%">Taxable amount</th>
+              <th style="width:8%">CGST</th>
+              <th style="width:8%">SGST</th>
+              <th style="width:8%">Amount</th>
+              <th style="width:3%" class="no-print"></th>
+            </tr>
+          </thead>
+          <tbody id="items-body">
+            <!-- Rows will be injected here via JS -->
+          </tbody>
+          <tbody>
+            <tr class="totals-row">
+              <td colspan="3">Total</td>
+              <td style="text-align:right" id="total-qty">0</td>
+              <td colspan="1"></td>
+              <td id="total-taxable">₹ 0.00</td>
+              <td id="total-cgst">₹ 0.00</td>
+              <td id="total-sgst">₹ 0.00</td>
+              <td id="grand-total">₹ 0</td>
+              <td class="no-print"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bottom-grid">
+        <div>
+          <table class="amounts-table" style="border-right:none">
+            <tbody>
+              <tr><td class="brown-header" colspan="2">Tax details</td></tr>
+              <tr><td>CGST</td><td style="text-align:right" id="tax-details-cgst">₹ 0.00</td></tr>
+              <tr><td>SGST</td><td style="text-align:right" id="tax-details-sgst">₹ 0.00</td></tr>
+            </tbody>
+          </table>
+          
+          <div class="brown-header" style="margin-top:10px">Invoice Amount In Words</div>
+          <div id="amount-words" style="padding:5px; text-align:center; border:1px solid #000; border-top:none; font-size:11px;">
+            Zero Rupees only
+          </div>
+
+          <div class="brown-header" style="margin-top:10px">Payment mode</div>
+          <div style="padding:5px; text-align:center; border:1px solid #000; border-top:none;">
+            <select id="payment-mode" style="text-align:center; padding:2px; font-size:12px;">
+              <option value="Cash">Cash</option>
+              <option value="UPI">UPI</option>
+              <option value="Net Banking">Net Banking</option>
+              <option value="Credit/Debit Card">Credit/Debit Card</option>
+            </select>
+          </div>
+        </div>
+        
+        <div>
+          <table class="amounts-table">
+            <tbody>
+              <tr><td class="brown-header" colspan="2">Amounts</td></tr>
+              <tr><td>Sub Total</td><td style="text-align:right" id="amounts-subtotal">₹ 0</td></tr>
+              <tr><td>Total</td><td style="text-align:right; font-weight:bold" id="amounts-total">₹ 0</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="footer-grid">
+        <div class="footer-col" style="padding:5px">
+          <div class="brown-header" style="margin:-5px -5px 5px -5px">Bank Details</div>
+          <div style="display:flex; gap:10px; align-items:center;">
+            <div class="qr-code">
+              <img id="qr-img" src="/assets/bank qr.jpeg" style="max-width:85px; max-height:85px; display:block; border-radius:4px;">
+            </div>
+            <div style="font-size:10px; line-height: 1.4;">
+              <div>Bank: <b>Axis Bank</b></div>
+              <div>Holder: <b>Ayush Traders</b></div>
+              <div>A/c No: <b>923020018039946</b> (Current)</div>
+              <div>IFSC: <b>UTIB0004956</b></div>
+              <div>UPI: <b>8319269867@axisbank</b></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="footer-col" style="padding:5px">
+          <div class="brown-header" style="margin:-5px -5px 5px -5px">Terms and Conditions</div>
+          <div id="terms" style="font-size:9px; padding:2px; line-height:1.4;">
+            1. Quality & Delivery: Material will be supplied as per the agreed specifications. Any visible shortage or quality issue must be reported at the time of delivery.<br>
+            2. Payment: Payment shall be made as per the terms stipulated in the invoice. Transportation and unloading charges shall be borne by the buyer unless otherwise agreed.<br>
+            3. Jurisdiction: All disputes arising out of this transaction shall be subject to the jurisdiction of the competent courts at Gharghoda, Chhattisgarh.
+          </div>
+        </div>
+        
+        <div class="footer-col" style="padding:5px; text-align:center">
+          <div style="font-size:10px; margin-bottom:10px;">For : <b><span id="f-name-sign">Ayush Traders</span></b></div>
+          <img src="/assets/seal & sign.jpeg" style="max-height:80px; max-width:150px; margin:0 auto; display:block;">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
